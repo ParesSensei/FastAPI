@@ -94,16 +94,6 @@ hashed_password: Password yang telah dienkripsiAutentikasi
 
 Proyek ini menggunakan JWT untuk autentikasi dan bcrypt untuk hashing password serta pydantic untuk validasi request post. Implementasi ini memastikan keamanan dalam penyimpanan dan verifikasi kredensial pengguna.
 
-## Konfigurasi Lingkungan
-
-Buat file `.env` untuk mengatur variabel lingkungan:
-
-```
-DATABASE_URL=postgresql://user:password@db:5432/mydatabase
-SECRET_KEY=mysecretkey
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-```
 
 ##
 
