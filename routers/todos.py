@@ -45,7 +45,7 @@ async def read_todo(user: user_depedency, db: db_dependency, todo_id: int = Path
     todo_model = db.query(Todos).filter(Todos.id == todo_id).filter(Todos.owner_id == user.get("id")).first()
     if todo_model is not None:
         return todo_model
-    raise HTTPException(status_code=404, detail="todo bot found")
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found")
 
 
 @router.post("/todo", status_code=status.HTTP_201_CREATED)
@@ -56,6 +56,9 @@ async def create_todo(user: user_depedency, db: db_dependency, todo_request: Tod
 
     db.add(todo_model)
     db.commit()
+    db.refresh(todo_model)
+
+    return todo_model
 
 
 @router.put("/todo/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -63,9 +66,9 @@ async def update_todo(user: user_depedency, db: db_dependency, todo_request: Tod
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication Failed")
 
-    todo_model = db.query(Todos).filter(Todos.id == todo_id).first()
+    todo_model = db.query(Todos).filter(Todos.id == todo_id).filter(Todos.owner_id == user.get("id")).first()
     if todo_model is None:
-        raise HTTPException(status_code=404, detail="todo not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found")
 
     todo_model.title = todo_request.title
     todo_model.description = todo_request.description
@@ -83,7 +86,7 @@ async def delete_todo(user: user_depedency, db: db_dependency, todo_id: int = Pa
 
     todo_model = db.query(Todos).filter(Todos.id == todo_id).filter(Todos.owner_id == user.get("id")).first()
     if todo_model is None:
-        raise HTTPException(status_code=404, detail="todo not found")
-    db.query(Todos).filter(Todos.id == todo_id).filter(Todos.owner_id == user.get("id")).first().delete()
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found")
 
+    db.delete(todo_model)
     db.commit()
